@@ -10,8 +10,7 @@ import java.util.List;
 public class ConfigModel {
     public int nrLakes = 7499981;
     public int powerDistance = 2;
-    public String mySampleString = "hello world";
-    public List<Integer> CycleWeights = List.of(
+    public List<Integer> cycleWeights = List.of(
             0, 5, 5, 3, 3, 1, 1
     );
     public int minimumDistance = 16;
