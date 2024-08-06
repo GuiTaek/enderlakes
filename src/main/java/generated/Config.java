@@ -13,8 +13,11 @@ public class Config extends ConfigWrapper<com.gmail.guitaekm.enderlakes.ConfigMo
 
     public final Keys keys = new Keys();
 
-    private final Option<java.lang.Integer> mySampleInt = this.optionForKey(this.keys.mySampleInt);
+    private final Option<java.lang.Integer> nrLakes = this.optionForKey(this.keys.nrLakes);
+    private final Option<java.lang.Integer> powerDistance = this.optionForKey(this.keys.powerDistance);
     private final Option<java.lang.String> mySampleString = this.optionForKey(this.keys.mySampleString);
+    private final Option<java.util.List<java.lang.Integer>> CycleWeights = this.optionForKey(this.keys.CycleWeights);
+    private final Option<java.lang.Integer> minimumDistance = this.optionForKey(this.keys.minimumDistance);
 
     private Config() {
         super(com.gmail.guitaekm.enderlakes.ConfigModel.class);
@@ -36,12 +39,20 @@ public class Config extends ConfigWrapper<com.gmail.guitaekm.enderlakes.ConfigMo
         return wrapper;
     }
 
-    public int mySampleInt() {
-        return mySampleInt.value();
+    public int nrLakes() {
+        return nrLakes.value();
     }
 
-    public void mySampleInt(int value) {
-        mySampleInt.set(value);
+    public void nrLakes(int value) {
+        nrLakes.set(value);
+    }
+
+    public int powerDistance() {
+        return powerDistance.value();
+    }
+
+    public void powerDistance(int value) {
+        powerDistance.set(value);
     }
 
     public java.lang.String mySampleString() {
@@ -52,10 +63,29 @@ public class Config extends ConfigWrapper<com.gmail.guitaekm.enderlakes.ConfigMo
         mySampleString.set(value);
     }
 
+    public java.util.List<java.lang.Integer> CycleWeights() {
+        return CycleWeights.value();
+    }
+
+    public void CycleWeights(java.util.List<java.lang.Integer> value) {
+        CycleWeights.set(value);
+    }
+
+    public int minimumDistance() {
+        return minimumDistance.value();
+    }
+
+    public void minimumDistance(int value) {
+        minimumDistance.set(value);
+    }
+
 
     public static class Keys {
-        public final Option.Key mySampleInt = new Option.Key("mySampleInt");
+        public final Option.Key nrLakes = new Option.Key("nrLakes");
+        public final Option.Key powerDistance = new Option.Key("powerDistance");
         public final Option.Key mySampleString = new Option.Key("mySampleString");
+        public final Option.Key CycleWeights = new Option.Key("CycleWeights");
+        public final Option.Key minimumDistance = new Option.Key("minimumDistance");
     }
 }
 
