@@ -1,3 +1,15 @@
+## Translation of config to math variables
+
+| ModMenu | config          | this document |
+| ------- | --------------- | ------------- |
+|         | nrLakes         | n             |
+|         | powerDistance   | e             |
+|         | cycleWeights    | *             |
+|         | minimumDistance | d             |
+
+
+*) cycleWeights define weights for the length of each cycle, that means the first entry is the weight of the 1-cycle, the second entry is the weight of the 2-cycle and so on
+
 ## Fixed things
 ### pi
 $\pi = (1)(2)(3)...(n_1)$
@@ -24,9 +36,9 @@ calculated lazy
 
 ### pos[., .]
 The base chunk positions of the lakes based on x and y integer coordinates. An example for this would be:
-$f(c) = d \cdot c^2 + 64$ if $c > 0$
+$f(c) = d \cdot c^e + 64$ if $c > 0$
 $f(0) = 0$ and
-$f(c) = -d \cdot c^2 - 64$ if $c < 0$
+$f(c) = -d \cdot c^e - 64$ if $c < 0$
 $pos[0, 0] = null$
 $pos[x, y] = [f(x), f(y)]$
 
@@ -46,10 +58,15 @@ This helps making the cycles randomly distributed, because $\pi$ isn't random at
 calculated eagerly
 
 ### off[., .]
+
 off[0, 0] = null
+
 off[1, -1] = [rand(pos[x, y].x, pos[x + 1, y].x, rand(pos[x, y - 1].y, pos[x, y].y)]
+
 off[1, 0] = [rand(pos[x, y].x, pos[x + 1, y].x, rand(pos[x, y - 1].y, pos[x, y + 1].y)]
+
 ...
+
 off[x, y] = [rand(pos[x - 1, y].x, pos[x + 1, y].x), rand(pos[x, y - 1].y, pos[x, y + 1])]
 
 This helps placing the lakes a little bit more random so they doesn't appear to be in a grid.
