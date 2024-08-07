@@ -1,10 +1,14 @@
 package com.gmail.guitaekm.enderlakes;
 
 import org.junit.jupiter.api.*;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestLakeDestinationFinder {
     static ConfigInstance smallPrimeConfig = new ConfigInstance(
@@ -34,5 +38,15 @@ public class TestLakeDestinationFinder {
         int ind = 0;
         for (Integer piI : piIVals)
             assertEquals(piI, LakeDestinationFinder.pi(ind++, smallPrimeConfig));
+    }
+    @Test
+    public void testCInjective() {
+        Set<LakeDestinationFinder.COutput> usedPositions = new HashSet<>();
+        for (int i: IntStream.rangeClosed(0, 1000).toArray()) {
+            LakeDestinationFinder.COutput outp = LakeDestinationFinder.c(i);
+            System.out.println(outp.toString());
+            assertFalse(usedPositions.contains(outp), outp.toString());
+            usedPositions.add(outp);
+        }
     }
 }
