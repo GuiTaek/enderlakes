@@ -15,8 +15,7 @@ public class Config extends ConfigWrapper<com.gmail.guitaekm.enderlakes.ConfigMo
 
     private final Option<java.lang.Integer> nrLakes = this.optionForKey(this.keys.nrLakes);
     private final Option<java.lang.Integer> powerDistance = this.optionForKey(this.keys.powerDistance);
-    private final Option<java.lang.String> mySampleString = this.optionForKey(this.keys.mySampleString);
-    private final Option<java.util.List<java.lang.Integer>> CycleWeights = this.optionForKey(this.keys.CycleWeights);
+    private final Option<java.util.List<java.lang.Integer>> cycleWeights = this.optionForKey(this.keys.cycleWeights);
     private final Option<java.lang.Integer> minimumDistance = this.optionForKey(this.keys.minimumDistance);
 
     private Config() {
@@ -55,20 +54,12 @@ public class Config extends ConfigWrapper<com.gmail.guitaekm.enderlakes.ConfigMo
         powerDistance.set(value);
     }
 
-    public java.lang.String mySampleString() {
-        return mySampleString.value();
+    public java.util.List<java.lang.Integer> cycleWeights() {
+        return cycleWeights.value();
     }
 
-    public void mySampleString(java.lang.String value) {
-        mySampleString.set(value);
-    }
-
-    public java.util.List<java.lang.Integer> CycleWeights() {
-        return CycleWeights.value();
-    }
-
-    public void CycleWeights(java.util.List<java.lang.Integer> value) {
-        CycleWeights.set(value);
+    public void cycleWeights(java.util.List<java.lang.Integer> value) {
+        cycleWeights.set(value);
     }
 
     public int minimumDistance() {
@@ -83,8 +74,7 @@ public class Config extends ConfigWrapper<com.gmail.guitaekm.enderlakes.ConfigMo
     public static class Keys {
         public final Option.Key nrLakes = new Option.Key("nrLakes");
         public final Option.Key powerDistance = new Option.Key("powerDistance");
-        public final Option.Key mySampleString = new Option.Key("mySampleString");
-        public final Option.Key CycleWeights = new Option.Key("CycleWeights");
+        public final Option.Key cycleWeights = new Option.Key("cycleWeights");
         public final Option.Key minimumDistance = new Option.Key("minimumDistance");
     }
 }

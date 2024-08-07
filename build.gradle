@@ -43,6 +43,8 @@ dependencies {
 	modImplementation "io.wispforest:owo-lib:${project.owo_version}"
 	include "io.wispforest:owo-sentinel:${project.owo_version}"
 	annotationProcessor modImplementation("io.wispforest:owo-lib:${project.owo_version}")
+	testImplementation(platform("org.junit:junit-bom:5.10.3"))
+	testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
 processResources {
@@ -93,3 +95,10 @@ publishing {
 
 sourceSets.main.java.srcDirs += [ 'src/main/java/generated' ]
 compileJava.options.generatedSourceOutputDirectory = file("${projectDir}/src/main/java/generated")
+
+test {
+	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+}
