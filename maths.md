@@ -30,7 +30,7 @@ is a large prime
 defined in code or maybe config
 
 ### c[.]
-A bijection that maps $\mathbb Z \to \mathbb Z \times \mathbb Z$
+A bijection that maps $\mathbb N \to \mathbb Z \times \mathbb Z$
 
 calculated lazy
 
