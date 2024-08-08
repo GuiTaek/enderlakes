@@ -7,6 +7,7 @@ import java.util.List;
 /**
  * Follows math.md to implement the logic in this mod
  */
+@SuppressWarnings("SuspiciousNameCombination")
 public class LakeDestinationFinder {
     public static int pi(int i, ConfigInstance config) {
         int weightSum = config.cycleWeights().stream().mapToInt(w -> w).sum();
@@ -49,6 +50,8 @@ public class LakeDestinationFinder {
         }
         int i2 = i - 1;
         // the ordering isn't relevant, because of g therefore no beautiful bijection
+
+        // x can't be 0 but y can, then rotate to get every grid point except (0, 0)
         int rotate = i2 % 4;
         int i3 = i2 / 4;
 
@@ -57,9 +60,8 @@ public class LakeDestinationFinder {
         // if the ceil method would return 0.99999999999999999999999999999998 then (int) would return 0, which is not
         // want. I'm not sure, if this is really the case, and it isn't worth it looking it up.
         int s = (int) (Math.ceil(sFloat) + 0.1d);
-        int y = i3 + 1 - s * (s + 1) / 2 + 1;
+        int y = s * (s + 1) / 2 - i3 - 1;
 
-        // -1 because x should sometimes become zero
         int x = s - y;
 
         return switch (rotate) {
@@ -71,5 +73,48 @@ public class LakeDestinationFinder {
                 throw new IllegalStateException("Rotating should be one of 0, 1, 2, 3. Inform the developer of this mod.");
             }
         };
+    }
+
+    public static int getRotation(int x, int y) {
+        // remember y can be 0
+        assert x != 0 || y != 0;
+        if (x == 0) {
+            return y > 0 ? 1 : 3;
+        }
+        if (y == 0) {
+            return x > 0 ? 0 : 2;
+        }
+        if (x > 0) {
+            if (y > 0) {
+                return 0;
+            }
+            return 3;
+        }
+        if (y > 0) {
+            return 1;
+        }
+        return 2;
+    }
+
+    public static int cInv(int x, int y) {
+        if (x == 0 && y == 0) {
+            return 0;
+        }
+
+        int rotation = getRotation(x, y);
+        x = Math.abs(x);
+        y = Math.abs(y);
+        switch(rotation) {
+            case 1, 3:
+                int temp = x;
+                x = y;
+                y = temp;
+        }
+        int s = x + y;
+        int res = (s + 1) * s / 2 - y - 1;
+        return res * 4 + rotation + 1;
+    }
+    public static int cInv(COutput outp) {
+        return cInv(outp.x, outp.y);
     }
 }
