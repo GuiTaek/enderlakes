@@ -42,11 +42,8 @@ public class LakeDestinationFinder {
     public record COutput(int x, int y) { }
 
     public static COutput c(int i) {
-        if (i < 0) {
+        if (i <= 0) {
             throw new IllegalArgumentException("give non-negative input to c");
-        }
-        if (i == 0) {
-            return new COutput(0, 0);
         }
         int i2 = i - 1;
         // the ordering isn't relevant, because of g therefore no beautiful bijection
@@ -98,7 +95,7 @@ public class LakeDestinationFinder {
 
     public static int cInv(int x, int y) {
         if (x == 0 && y == 0) {
-            return 0;
+            throw new IllegalArgumentException("May not contain the origin");
         }
 
         int rotation = getRotation(x, y);

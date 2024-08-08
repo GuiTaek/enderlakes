@@ -1,7 +1,6 @@
 package com.gmail.guitaekm.enderlakes;
 
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.function.Executable;
 
 import java.util.HashSet;
 import java.util.List;
@@ -42,7 +41,7 @@ public class TestLakeDestinationFinder {
     @Test
     public void testCInjective() {
         Set<LakeDestinationFinder.COutput> usedPositions = new HashSet<>();
-        for (int i: IntStream.rangeClosed(0, 1000).toArray()) {
+        for (int i: IntStream.rangeClosed(1, 1000).toArray()) {
             LakeDestinationFinder.COutput outp = LakeDestinationFinder.c(i);
             assertFalse(usedPositions.contains(outp), outp.toString());
             usedPositions.add(outp);
@@ -52,6 +51,9 @@ public class TestLakeDestinationFinder {
         Set<Integer> usedIntegers = new HashSet<>();
         for (int x = -100; x <= 100; x++) {
             for (int y = -100; y <= 100; y++) {
+                if (x == 0 && y == 0) {
+                    continue;
+                }
                 int i = LakeDestinationFinder.cInv(+x, +y);
                 assertFalse(usedIntegers.contains(i), String.valueOf(i));
                 usedIntegers.add(i);
@@ -69,16 +71,19 @@ public class TestLakeDestinationFinder {
         assertEquals(3, LakeDestinationFinder.getRotation(+y, -x));
     }
     @Test
-    public void CInvPos() {
+    public void CInvPositive() {
         for (int x = -100; x <= 100; x++) {
             for (int y = -100; y <= 100; y++) {
-                Assertions.assertTrue(LakeDestinationFinder.cInv(x, y) >= 0);
+                if (x == 0 && y == 0) {
+                    continue;
+                }
+                Assertions.assertTrue(LakeDestinationFinder.cInv(x, y) >= 1);
             }
         }
     }
 
     @Test
-    public void CThrows() {
+    public void cThrows() {
         for(int i = -1000; i < 0; i++) {
             final int giveI = i;
             assertThrows(
@@ -89,8 +94,16 @@ public class TestLakeDestinationFinder {
     }
 
     @Test
+    public void cInvThrows() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> LakeDestinationFinder.cInv(0, 0)
+        );
+    }
+
+    @Test
     public void cInvOfCInv() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 1; i < 1000; i++) {
             assertEquals(i, LakeDestinationFinder.cInv(
                     LakeDestinationFinder.c(i)
             ));
