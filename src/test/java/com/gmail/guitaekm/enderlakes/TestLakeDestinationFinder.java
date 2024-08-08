@@ -1,5 +1,6 @@
 package com.gmail.guitaekm.enderlakes;
 
+import com.gmail.guitaekm.enderlakes.LakeDestinationFinder.ChunkPos;
 import org.junit.jupiter.api.*;
 
 import java.util.HashSet;
@@ -40,9 +41,9 @@ public class TestLakeDestinationFinder {
     }
     @Test
     public void testCInjective() {
-        Set<LakeDestinationFinder.COutput> usedPositions = new HashSet<>();
+        Set<ChunkPos> usedPositions = new HashSet<>();
         for (int i: IntStream.rangeClosed(1, 1000).toArray()) {
-            LakeDestinationFinder.COutput outp = LakeDestinationFinder.c(i);
+            ChunkPos outp = LakeDestinationFinder.c(i);
             assertFalse(usedPositions.contains(outp), outp.toString());
             usedPositions.add(outp);
         }

@@ -35,9 +35,17 @@ public class LakeDestinationFinder {
         throw new IllegalArgumentException("integer not part of the permutation");
     }
 
-    public record COutput(int x, int y) { }
+    // it is difficult to include minecraft's ChunkPos into the test module, I wasn't able to
+    public record ChunkPos(int x, int y) {
+        net.minecraft.util.math.ChunkPos toMinecraft() {
+            return new net.minecraft.util.math.ChunkPos(x, y);
+        }
+        ChunkPos(net.minecraft.util.math.ChunkPos pos) {
+            this(pos.x, pos.z);
+        }
+    }
 
-    public static COutput c(int i) {
+    public static ChunkPos c(int i) {
         if (i <= 0) {
             throw new IllegalArgumentException("give non-negative input to c");
         }
@@ -58,10 +66,10 @@ public class LakeDestinationFinder {
         int x = s - y;
 
         return switch (rotate) {
-            case 0 -> new COutput(+x, +y);
-            case 1 -> new COutput(-y, +x);
-            case 2 -> new COutput(-x, -y);
-            case 3 -> new COutput(+y, -x);
+            case 0 -> new ChunkPos(+x, +y);
+            case 1 -> new ChunkPos(-y, +x);
+            case 2 -> new ChunkPos(-x, -y);
+            case 3 -> new ChunkPos(+y, -x);
             default -> {
                 throw new IllegalStateException("Rotating should be one of 0, 1, 2, 3. Inform the developer of this mod.");
             }
@@ -107,7 +115,7 @@ public class LakeDestinationFinder {
         int res = (s + 1) * s / 2 - y - 1;
         return res * 4 + rotation + 1;
     }
-    public static int cInv(COutput outp) {
+    public static int cInv(ChunkPos outp) {
         return cInv(outp.x, outp.y);
     }
 }
