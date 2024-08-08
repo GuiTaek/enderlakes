@@ -103,11 +103,24 @@ public class TestLakeDestinationFinder {
     }
 
     @Test
-    public void cInvOfCInv() {
+    public void cInvInvOfC() {
         for (int i = 1; i < 1000; i++) {
             assertEquals(i, LakeDestinationFinder.cInv(
                     LakeDestinationFinder.c(i)
             ));
+        }
+    }
+
+    @Test
+    public void fInvInvOffF() {
+        // this is approximately the whole range f is meant to work on
+        for (int c = -350; c <= 350; c++) {
+            assertEquals(
+                    c, LakeDestinationFinder.fInv(
+                        CONFIG,
+                        LakeDestinationFinder.f(CONFIG, c)
+                    )
+            );
         }
     }
 }

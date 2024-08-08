@@ -118,4 +118,20 @@ public class LakeDestinationFinder {
     public static int cInv(ChunkPos outp) {
         return cInv(outp.x, outp.y);
     }
+    public static int f(ConfigInstance config, int c) {
+        int signum = Integer.compare(c, 0);
+        int offset = signum * 64;
+        return (int) (signum * Math.round(Math.pow(Math.abs(c), config.powerDistance())) + offset);
+    }
+    public static int fInv(ConfigInstance config, int c) {
+        int signum = Integer.compare(c, 0);
+        int offset = signum * 64;
+        return signum * (int) (Math.round(Math.pow(Math.abs(c - offset), 1d / (double) config.powerDistance())));
+    }
+    public static net.minecraft.util.math.ChunkPos pos(ConfigInstance config, int x, int y) {
+        return new net.minecraft.util.math.ChunkPos(f(config, x), f(config, y));
+    }
+    public static net.minecraft.util.math.ChunkPos pos(ConfigInstance config, net.minecraft.util.math.ChunkPos gridCoords) {
+        return pos(config, gridCoords.x, gridCoords.z);
+    }
 }
