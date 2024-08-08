@@ -36,10 +36,15 @@ calculated lazy
 
 ### pos[., .]
 The base chunk positions of the lakes based on x and y integer coordinates. An example for this would be:
-$f(c) = d \cdot c^e + 64$ if $c > 0$
+
+$f(c) = d \cdot |c|^e + 64$ if $c > 0$
+
 $f(0) = 0$ and
-$f(c) = -d \cdot c^e - 64$ if $c < 0$
+
+$f(c) = -d \cdot |c|^e - 64$ if $c < 0$
+
 $pos[0, 0] = null$
+
 $pos[x, y] = [f(x), f(y)]$
 
 d is configurable
