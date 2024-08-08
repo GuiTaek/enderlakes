@@ -1,9 +1,5 @@
 package com.gmail.guitaekm.enderlakes;
 
-import com.gmail.guitaekm.enderlakes.Config;
-
-import java.util.List;
-
 /**
  * Follows math.md to implement the logic in this mod
  */

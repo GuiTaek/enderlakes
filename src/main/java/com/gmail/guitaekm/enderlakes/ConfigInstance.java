@@ -1,7 +1,6 @@
 package com.gmail.guitaekm.enderlakes;
 
 import java.util.List;
-import com.gmail.guitaekm.enderlakes.Config;
 
 public record ConfigInstance (
         int nrLakes,
