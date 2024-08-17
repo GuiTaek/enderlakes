@@ -1,5 +1,6 @@
 package com.gmail.guitaekm.enderlakes;
 
+import net.minecraft.util.math.random.Random;
 /**
  * Follows math.md to implement the logic in this mod
  */
@@ -36,16 +37,18 @@ public class LakeDestinationFinder {
     }
 
     // it is difficult to include minecraft's ChunkPos into the test module, I wasn't able to
-    public record ChunkPos(int x, int y) {
-        net.minecraft.util.math.ChunkPos toMinecraft() {
-            return new net.minecraft.util.math.ChunkPos(x, y);
+    public record ChunkPos(int x, int z) {
+        public net.minecraft.util.math.ChunkPos toMinecraft() {
+            return new net.minecraft.util.math.ChunkPos(x, z);
         }
-        ChunkPos(net.minecraft.util.math.ChunkPos pos) {
+        public ChunkPos(net.minecraft.util.math.ChunkPos pos) {
             this(pos.x, pos.z);
         }
     }
 
-    public static ChunkPos c(int i) {
+    public record GridPos(int x, int y) { }
+
+    public static GridPos c(int i) {
         if (i <= 0) {
             throw new IllegalArgumentException("give non-negative input to c");
         }
@@ -66,10 +69,10 @@ public class LakeDestinationFinder {
         int x = s - y;
 
         return switch (rotate) {
-            case 0 -> new ChunkPos(+x, +y);
-            case 1 -> new ChunkPos(-y, +x);
-            case 2 -> new ChunkPos(-x, -y);
-            case 3 -> new ChunkPos(+y, -x);
+            case 0 -> new GridPos(+x, +y);
+            case 1 -> new GridPos(-y, +x);
+            case 2 -> new GridPos(-x, -y);
+            case 3 -> new GridPos(+y, -x);
             default -> {
                 throw new IllegalStateException("Rotating should be one of 0, 1, 2, 3. Inform the developer of this mod.");
             }
@@ -115,7 +118,7 @@ public class LakeDestinationFinder {
         int res = (s + 1) * s / 2 - y - 1;
         return res * 4 + rotation + 1;
     }
-    public static int cInv(ChunkPos outp) {
+    public static int cInv(GridPos outp) {
         return cInv(outp.x, outp.y);
     }
     public static int f(ConfigInstance config, int c) {
@@ -128,10 +131,103 @@ public class LakeDestinationFinder {
         int offset = signum * 64;
         return signum * (int) (Math.round(Math.pow(Math.abs(c - offset), 1d / (double) config.powerDistance())));
     }
-    public static net.minecraft.util.math.ChunkPos pos(ConfigInstance config, int x, int y) {
-        return new net.minecraft.util.math.ChunkPos(f(config, x), f(config, y));
+
+    /**
+     * in math.md, it's rawPos
+     * @param config a config instance e.g. self defined through ConfigInstance or defined through the player
+     * @param x grid x coordinate
+     * @param y grid y coordinate
+     * @return the chunk position that the grid position relates to in the minecraft world
+     */
+    public static ChunkPos rawPos(ConfigInstance config, int x, int y) {
+        return new ChunkPos(f(config, x), f(config, y));
     }
-    public static net.minecraft.util.math.ChunkPos pos(ConfigInstance config, net.minecraft.util.math.ChunkPos gridCoords) {
-        return pos(config, gridCoords.x, gridCoords.z);
+
+    /**
+     * in math.md, it's rawPos
+     * @param config a config instance e.g. self defined through ConfigInstance or defined through the player
+     * @param gridCoords the coordinates in the grid not really being chunk coordinates
+     * @return the chunk position that the grid position relates to in the minecraft world
+     */
+    public static ChunkPos rawPos(ConfigInstance config, GridPos gridCoords) {
+        return rawPos(config, gridCoords.x, gridCoords.y);
+    }
+
+    /**
+     * in math.md it's pos + off
+     * @param config a config instance e.g. self defined through ConfigInstance or defined through the player
+     * @param seed the seed of the world or the random generator if not used in a minecraft setting
+     * @param x the grid x position
+     * @param y the grid y position
+     * @return the chunk where the lake should ly in
+     */
+    public static ChunkPos pos(ConfigInstance config, long seed, int x, int y) {
+        if (x == 0 && y == 0) {
+            throw new IllegalArgumentException("off shall not get the origin");
+        }
+        Random random = Random.create(seed ^ ((long) x * config.nrLakes() + y));
+        int offX, offZ;
+        {
+            ChunkPos fromPos = rawPos(config, x, y - 1);
+            ChunkPos toPos = rawPos(config, x, y + 1);
+            if (x == 0) {
+                if (y > 0) {
+                    fromPos = rawPos(config, x, y);
+                } else {
+                    toPos = rawPos(config, x, y);
+                }
+            }
+            offZ = random.nextBetween(fromPos.z, toPos.z);
+        }
+        {
+            ChunkPos fromPos = rawPos(config, x - 1, y);
+            ChunkPos toPos = rawPos(config, x + 1, y);
+            if (y == 0) {
+                if (x > 0) {
+                    fromPos = rawPos(config, x, y);
+                } else {
+                    toPos = rawPos(config, x, y);
+                }
+            }
+            offX = random.nextBetween(fromPos.x, toPos.x);
+        }
+        return new ChunkPos(offX, offZ);
+    }
+
+    /**
+     *
+     * @param config a config instance e.g. self defined through ConfigInstance or defined through the player
+     * @param seed the seed of the world or the random generator if not used in a minecraft setting
+     * @param pos the position in the grid
+     * @return the chunk where the lake should ly in
+     */
+    public static ChunkPos pos(ConfigInstance config, long seed, GridPos pos) {
+        return pos(config, seed, pos.x, pos.y);
+    }
+
+    public static GridPos getRawGridPos(ConfigInstance config, ChunkPos pos) {
+        return new GridPos(fInv(config, pos.x), fInv(config, pos.z));
+    }
+
+    public static GridPos findNearestLake(ConfigInstance config, long seed, ChunkPos pos) {
+        GridPos basePos = getRawGridPos(config, pos);
+        int nearestDistanceSquared = Integer.MAX_VALUE;
+        GridPos nearestLake = null;
+        for (int xDiff = -1; xDiff <= +1; xDiff++) {
+            for (int yDiff = -1; yDiff <= +1; yDiff++) {
+                GridPos currGridPos = new GridPos(basePos.x + xDiff, basePos.y + yDiff);
+                if (currGridPos.equals(new GridPos(0, 0))) {
+                    continue;
+                }
+                int currDistanceSquared = pos(config, seed, currGridPos)
+                        .toMinecraft()
+                        .getSquaredDistance(pos.toMinecraft());
+                if (currDistanceSquared < nearestDistanceSquared) {
+                    nearestDistanceSquared = currDistanceSquared;
+                    nearestLake = currGridPos;
+                }
+            }
+        }
+        return nearestLake;
     }
 }

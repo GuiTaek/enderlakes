@@ -3,10 +3,7 @@ package com.gmail.guitaekm.enderlakes;
 import blue.endless.jankson.Jankson;
 import io.wispforest.owo.config.ConfigWrapper;
 import io.wispforest.owo.config.Option;
-import io.wispforest.owo.util.Observable;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class Config extends ConfigWrapper<com.gmail.guitaekm.enderlakes.ConfigModel> {

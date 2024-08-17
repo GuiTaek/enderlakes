@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.6.9'
+	id 'fabric-loom' version '1.7.3'
 	id 'maven-publish'
 }
 
@@ -18,7 +18,6 @@ repositories {
 	// for more information about repositories.
 	maven { url 'https://maven.wispforest.io/releases/' }
 }
-
 loom {
 	splitEnvironmentSourceSets()
 
@@ -28,7 +27,6 @@ loom {
 			sourceSet sourceSets.client
 		}
 	}
-
 }
 
 dependencies {
@@ -46,7 +44,8 @@ dependencies {
 	// annotationProcessor modImplementation("io.wispforest:owo-lib:${project.owo_version}")
 	testImplementation(platform("org.junit:junit-bom:5.10.3"))
 	testImplementation("org.junit.jupiter:junit-jupiter")
-}
+	testImplementation files(".gradle\\loom-cache\\minecraftMaven\\net\\minecraft\\minecraft-common-b8a5076d60\\1.21-net.fabricmc.yarn.1_21.1.21+build.9-v2\\minecraft-common-b8a5076d60-1.21-net.fabricmc.yarn.1_21.1.21+build.9-v2.jar")
+	}
 
 processResources {
 	inputs.property "version", project.version
@@ -94,8 +93,7 @@ publishing {
 	}
 }
 
-sourceSets.main.java.srcDirs += [ 'src/main/generatedJava' ]
-compileJava.options.generatedSourceOutputDirectory = file("${projectDir}/src/main/generatedJava/com/gmail/guitaekm/enderlakes")
+sourceSets.main.java.srcDirs += [ 'src/main/generated' ]
 
 test {
 	useJUnitPlatform()
