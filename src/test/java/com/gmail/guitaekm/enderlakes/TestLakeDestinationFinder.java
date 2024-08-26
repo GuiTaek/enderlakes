@@ -186,7 +186,8 @@ public class TestLakeDestinationFinder {
         int xCheck = rand.nextInt(from.x(), to.x());
         int zCheck = rand.nextInt(from.z(), to.z());
         ChunkPos checkChunk = new ChunkPos(xCheck, zCheck);
-        int bestDistance = Integer.MAX_VALUE;
+        // overflows when being integer
+        long bestDistance = Long.MAX_VALUE;
         Set<ChunkPos> bestChunks = new HashSet<>();
         for (int x = -100; x <= 100; x++) {
             for (int y = -100; y <= 100; y++) {
@@ -198,7 +199,7 @@ public class TestLakeDestinationFinder {
                 }
                 int dx = currChunk.x() - xCheck;
                 int dz = currChunk.z() - zCheck;
-                int currDistSq = dx * dx + dz * dz;
+                long currDistSq = (long) dx * dx + (long) dz * dz;
                 if (currDistSq == bestDistance) {
                     bestChunks.add(currChunk);
                 }
