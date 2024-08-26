@@ -179,8 +179,9 @@ public class TestLakeDestinationFinder {
     public static void nearestLakeIsIndeedNearestWithSeed(long seed) {
         // 350 is approximately the biggest needed grid coordinate
         // define a range, leave enough tolerances for checking really every lake position
-        ChunkPos from = LakeDestinationFinder.rawPos(CONFIG, new GridPos(-300, -300));
-        ChunkPos to = LakeDestinationFinder.rawPos(CONFIG, new GridPos(300, 300));
+        // have to be confined so it is possible to run this efficiently
+        ChunkPos from = LakeDestinationFinder.rawPos(CONFIG, new GridPos(-50, -50));
+        ChunkPos to = LakeDestinationFinder.rawPos(CONFIG, new GridPos(50, 50));
         Random rand = new Random(seed);
         int xCheck = rand.nextInt(from.x(), to.x());
         int zCheck = rand.nextInt(from.z(), to.z());
