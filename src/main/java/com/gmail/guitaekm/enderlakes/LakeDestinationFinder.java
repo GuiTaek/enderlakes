@@ -232,22 +232,29 @@ public class LakeDestinationFinder {
         return new GridPos(fInv(config, pos.x), fInv(config, pos.z));
     }
 
-    public static GridPos findNearestLake(ConfigInstance config, long seed, ChunkPos pos) {
+    public static Set<GridPos> findNearestLake(ConfigInstance config, long seed, ChunkPos pos) {
         GridPos basePos = getRawGridPos(config, pos);
         int nearestDistanceSquared = Integer.MAX_VALUE;
-        GridPos nearestLake = null;
-        for (int xDiff = -1; xDiff <= +1; xDiff++) {
-            for (int yDiff = -1; yDiff <= +1; yDiff++) {
+        HashSet<GridPos> nearestLake = new HashSet<>();
+        // the offset of pos relative to rawPos is inside a 2x2 GridPos-Rectangle, therefore -2 to +2
+        for (int xDiff = -2; xDiff <= +2; xDiff++) {
+            for (int yDiff = -2; yDiff <= +2; yDiff++) {
                 GridPos currGridPos = new GridPos(basePos.x + xDiff, basePos.y + yDiff);
-                if (currGridPos.equals(new GridPos(0, 0))) {
+                try {
+                    rawPos(config, currGridPos);
+                } catch (IllegalArgumentException exc) {
                     continue;
                 }
                 int currDistanceSquared = pos(config, seed, currGridPos)
                         .toMinecraft()
                         .getSquaredDistance(pos.toMinecraft());
-                if (currDistanceSquared < nearestDistanceSquared) {
+                if (currDistanceSquared == nearestDistanceSquared) {
+                    nearestLake.add(currGridPos);
+                }
+                else if (currDistanceSquared < nearestDistanceSquared) {
                     nearestDistanceSquared = currDistanceSquared;
-                    nearestLake = currGridPos;
+                    nearestLake = new HashSet<>();
+                    nearestLake.add(currGridPos);
                 }
             }
         }

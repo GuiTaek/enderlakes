@@ -208,15 +208,14 @@ public class TestLakeDestinationFinder {
                 }
             }
         }
-        ChunkPos res  = LakeDestinationFinder.pos(
-                CONFIG,
-                seed,
-                LakeDestinationFinder.findNearestLake(
+        Set<ChunkPos> toCheck = LakeDestinationFinder.findNearestLake(
                         CONFIG,
                         seed,
                         checkChunk
-                )
-        );
-        assertTrue(bestChunks.contains(res));
+                ).stream()
+                .map(gridPos -> LakeDestinationFinder.pos(CONFIG, seed, gridPos))
+                .collect(Collectors.toSet());
+        assertTrue(bestChunks.containsAll(toCheck) && toCheck.containsAll(bestChunks));
+
     }
 }
