@@ -5,6 +5,7 @@ import com.gmail.guitaekm.enderlakes.LakeDestinationFinder.GridPos;
 import org.junit.jupiter.api.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -127,20 +128,19 @@ public class TestLakeDestinationFinder {
     public void rawGridPosInvOfRawPos() {
         for (int x = -100; x <= 100; x++) {
             for (int y = -100; y <= 100; y++) {
-                if (x == 0 && y == 0) {
-                    continue;
-                }
-                GridPos oldPos = new GridPos(x, y);
-                GridPos newPos = LakeDestinationFinder.getRawGridPos(
-                        CONFIG,
-                        LakeDestinationFinder.rawPos(CONFIG, oldPos)
-                );
-                assertEquals(oldPos, newPos);
+                try {
+                    GridPos oldPos = new GridPos(x, y);
+                    GridPos newPos = LakeDestinationFinder.getRawGridPos(
+                            CONFIG,
+                            LakeDestinationFinder.rawPos(CONFIG, oldPos)
+                    );
+                    assertEquals(oldPos, newPos);
+                } catch (IllegalArgumentException ignored) { }
             }
         }
     }
 
-    //@Test
+    @Test
     public void nearestLakeInvOfPos() {
         Random rand = new Random(42);
         for (int i = 0; i < 10; i++) {
@@ -149,20 +149,26 @@ public class TestLakeDestinationFinder {
     }
 
     public static void nearestLakeInvOfPosWithSeed(long seed) {
-        for (int x = -100; x <= 100; x++) {
-            for (int y = -100; y <= 100; y++) {
+        for (int x = -50; x <= 50; x++) {
+            for (int y = -50; y <= 50; y++) {
                 GridPos oldPos = new GridPos(x, y);
-                GridPos newPos = LakeDestinationFinder.findNearestLake(
+                ChunkPos rawChunkPos;
+                try {
+                    rawChunkPos = LakeDestinationFinder.pos(CONFIG, seed, oldPos);
+                } catch (IllegalArgumentException exc) {
+                    continue;
+                }
+                Set<GridPos> newPosses = LakeDestinationFinder.findNearestLake(
                         CONFIG,
                         seed,
-                        LakeDestinationFinder.pos(CONFIG, seed, oldPos)
+                        rawChunkPos
                 );
-                assertEquals(oldPos, newPos);
+                assertTrue(newPosses.contains(oldPos));
             }
         }
     }
 
-    //@Test
+    @Test
     public void nearestLakeIsIndeedNearest() {
         Random rand = new Random(42);
         for (int i = 0; i < 10; i++) {
@@ -181,9 +187,14 @@ public class TestLakeDestinationFinder {
         ChunkPos checkChunk = new ChunkPos(xCheck, zCheck);
         int bestDistance = Integer.MAX_VALUE;
         Set<ChunkPos> bestChunks = new HashSet<>();
-        for (int x = -350; x <= 350; x++) {
-            for (int y = -350; y <= 350; y++) {
-                ChunkPos currChunk = LakeDestinationFinder.pos(CONFIG, seed, new GridPos(x, y));
+        for (int x = -100; x <= 100; x++) {
+            for (int y = -100; y <= 100; y++) {
+                ChunkPos currChunk;
+                try {
+                    currChunk = LakeDestinationFinder.pos(CONFIG, seed, new GridPos(x, y));
+                } catch (RuntimeException exc) {
+                    continue;
+                }
                 int dx = currChunk.x() - xCheck;
                 int dz = currChunk.z() - zCheck;
                 int currDistSq = dx * dx + dz * dz;

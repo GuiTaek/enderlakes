@@ -1,6 +1,10 @@
 package com.gmail.guitaekm.enderlakes;
 
 import net.minecraft.util.math.random.Random;
+
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Follows math.md to implement the logic in this mod
  */
@@ -140,7 +144,12 @@ public class LakeDestinationFinder {
      * @return the chunk position that the grid position relates to in the minecraft world
      */
     public static ChunkPos rawPos(ConfigInstance config, int x, int y) {
-        return new ChunkPos(f(config, x), f(config, y));
+        ChunkPos res = new ChunkPos(f(config, x), f(config, y));
+        if (-64 <= res.x && res.x <= +64
+                && -64 <= res.z && res.z <= +64) {
+            throw new IllegalArgumentException("rawPos got a pos in the 128x128 chunks of the start island");
+        }
+        return res;
     }
 
     /**
@@ -168,26 +177,40 @@ public class LakeDestinationFinder {
         Random random = Random.create(seed ^ ((long) x * config.nrLakes() + y));
         int offX, offZ;
         {
-            ChunkPos fromPos = rawPos(config, x, y - 1);
-            ChunkPos toPos = rawPos(config, x, y + 1);
-            if (x == 0) {
-                if (y > 0) {
-                    fromPos = rawPos(config, x, y);
-                } else {
-                    toPos = rawPos(config, x, y);
-                }
+            ChunkPos fromPos;
+            try {
+                fromPos = rawPos(config, x, y - 1);
+                rawPos(config, x - 1, y - 1);
+                rawPos(config, x + 1, y - 1);
+            } catch(IllegalArgumentException exc) {
+                fromPos = rawPos(config, x, y);
+            }
+            ChunkPos toPos;
+            try {
+                toPos = rawPos(config, x, y + 1);
+                rawPos(config, x - 1, y + 1);
+                rawPos(config, x + 1, y + 1);
+            } catch(IllegalArgumentException exc) {
+                toPos = rawPos(config, x, y);
             }
             offZ = random.nextBetween(fromPos.z, toPos.z);
         }
         {
-            ChunkPos fromPos = rawPos(config, x - 1, y);
-            ChunkPos toPos = rawPos(config, x + 1, y);
-            if (y == 0) {
-                if (x > 0) {
-                    fromPos = rawPos(config, x, y);
-                } else {
-                    toPos = rawPos(config, x, y);
-                }
+            ChunkPos fromPos;
+            try {
+                fromPos = rawPos(config, x - 1, y);
+                rawPos(config, x - 1, y - 1);
+                rawPos(config, x - 1, y + 1);
+            } catch(IllegalArgumentException exc) {
+                fromPos = rawPos(config, x, y);
+            }
+            ChunkPos toPos;
+            try {
+                toPos = rawPos(config, x + 1, y);
+                rawPos(config, x + 1, y - 1);
+                rawPos(config, x + 1, y + 1);
+            } catch(IllegalArgumentException exc) {
+                toPos = rawPos(config, x, y);
             }
             offX = random.nextBetween(fromPos.x, toPos.x);
         }
