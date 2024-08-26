@@ -127,13 +127,11 @@ public class LakeDestinationFinder {
     }
     public static int f(ConfigInstance config, int c) {
         int signum = Integer.compare(c, 0);
-        int offset = signum * 64;
-        return (int) (signum * Math.round(Math.pow(Math.abs(c), config.powerDistance())) + offset);
+        return (int) (signum * config.minimumDistance() * Math.round(Math.pow(Math.abs(c), config.powerDistance())));
     }
     public static int fInv(ConfigInstance config, int c) {
         int signum = Integer.compare(c, 0);
-        int offset = signum * 64;
-        return signum * (int) (Math.round(Math.pow(Math.abs(c - offset), 1d / (double) config.powerDistance())));
+        return signum * (int) (Math.round(Math.pow((double) Math.abs(c) / config.minimumDistance(), 1d / (double) config.powerDistance())));
     }
 
     /**
