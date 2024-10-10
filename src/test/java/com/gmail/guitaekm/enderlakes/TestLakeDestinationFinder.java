@@ -220,4 +220,23 @@ public class TestLakeDestinationFinder {
         assertTrue(bestChunks.containsAll(toCheck) && toCheck.containsAll(bestChunks));
 
     }
+
+    @Test
+    public void testModularExponentiationBySquaring() {
+        Random random = new Random(42);
+        int counter = 0;
+        for (int i = 0; i < 10000; i++) {
+            int b = random.nextInt(2, 100);
+            int e = random.nextInt(2, 50);
+            if (Math.pow(b, e) >= Integer.MAX_VALUE) {
+                continue;
+            }
+            counter++;
+            int n = random.nextInt(b + 1, 1000);
+            int expected = (int) Math.round(Math.pow(b, e) % n);
+            int actual = LakeDestinationFinder.modularExponentiationBySquaring(b, e, n);
+            assertEquals(expected, actual);
+        }
+        assert counter >= 1000;
+    }
 }

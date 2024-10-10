@@ -17,6 +17,7 @@ repositories {
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
 	maven { url 'https://maven.wispforest.io/releases/' }
+	mavenCentral()
 }
 loom {
 	splitEnvironmentSourceSets()
@@ -45,6 +46,7 @@ dependencies {
 	testImplementation(platform("org.junit:junit-bom:5.10.3"))
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation files(".gradle\\loom-cache\\minecraftMaven\\net\\minecraft\\minecraft-common-b8a5076d60\\1.21-net.fabricmc.yarn.1_21.1.21+build.9-v2\\minecraft-common-b8a5076d60-1.21-net.fabricmc.yarn.1_21.1.21+build.9-v2.jar")
+	implementation group: 'com.google.guava', name: 'guava', version: '33.3.1-jre'
 	}
 
 processResources {

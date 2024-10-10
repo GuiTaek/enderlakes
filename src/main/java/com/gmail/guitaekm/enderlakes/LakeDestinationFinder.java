@@ -1,7 +1,9 @@
 package com.gmail.guitaekm.enderlakes;
 
+import com.google.common.collect.Streams;
 import net.minecraft.util.math.random.Random;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -257,5 +259,74 @@ public class LakeDestinationFinder {
             }
         }
         return nearestLake;
+    }
+
+
+
+    public static boolean isPrimitiveRoot(int g, int n) {
+        // needs long time for big numbers
+        assert n <= 1000;
+        int phiN = phi(n);
+        // TODO: finish method according to wikipedia
+        return true;
+    }
+
+    // from https://en.wikipedia.org/wiki/Modular_exponentiation#Pseudocode
+    public static int modularExponentiationBySquaring(int b, int e, int n) {
+        if (n == 1) {
+            return 0;
+        }
+        int result = 1;
+        b = b % n;
+        while (e > 0) {
+            if (e % 2 == 1) {
+                result = (result * b) % n;
+            }
+            e = e >> 1;
+            b = (b * b) % n;
+        }
+        return result;
+    }
+
+    public static int phi(int num) {
+        ArrayList<Integer> raw_factors = primeFactors(num);
+        ArrayList<Integer> unique_factors = new ArrayList<>();
+        ArrayList<Integer> pow = new ArrayList<>();
+        // there are usually not that many factors in there, therefore lists may be used
+        for (Integer fact : raw_factors) {
+            if (!unique_factors.contains(fact)) {
+                unique_factors.add(fact);
+                pow.add(0);
+            }
+        }
+        for (Integer fact : raw_factors) {
+            int ind = unique_factors.indexOf(fact);
+            pow.set(ind, pow.get(ind) + 1);
+        }
+        return Streams.zip(
+                unique_factors.stream(),
+                pow.stream(),
+                (fact, pow1) -> Math.toIntExact(
+                        Math.round(Math.pow(fact, pow1) - Math.pow(fact, pow1 - 1))
+                )
+        ).reduce(1, (a, b) -> a*b);
+    }
+
+    // from https://stackoverflow.com/a/6233030/3289974
+    public static ArrayList<Integer> primeFactors(int num)
+    {
+        assert num < 10000000;
+        ArrayList<Integer> factors = new ArrayList<>();
+        factors.add(1);
+        for (int a = 2;  num>1; ) {
+            if (num%a==0) {
+                factors.add(a);
+                num/=a;
+            }
+            else {
+                a++;
+            }
+        }
+        return factors;
     }
 }
