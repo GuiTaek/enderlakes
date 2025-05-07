@@ -265,29 +265,37 @@ public class LakeDestinationFinder {
 
     public static boolean isPrimitiveRoot(int g, int n) {
         // needs long time for big numbers
-        assert n <= 1000;
-        int phiN = phi(n);
-        // TODO: finish method according to wikipedia
+        assert n <= 10000000;
+        assert isPrime(n);
+        // n is asserted to be a prime number
+        int phiN = n - 1;
+        // primeFactors(phiN) could be a constant saved in the code
+        for (int fact : primeFactors(phiN)) {
+            if (modularExponentiationBySquaring(g, phiN / fact, n) == 1) {
+                return false;
+            }
+        }
         return true;
     }
 
     // from https://en.wikipedia.org/wiki/Modular_exponentiation#Pseudocode
-    public static int modularExponentiationBySquaring(int b, int e, int n) {
+    public static long modularExponentiationBySquaring(long b, long e, long n) {
         if (n == 1) {
             return 0;
         }
-        int result = 1;
+        long result = 1;
         b = b % n;
         while (e > 0) {
             if (e % 2 == 1) {
-                result = (result * b) % n;
+                result = ((result * b) % n + n) % n;
             }
             e = e >> 1;
-            b = (b * b) % n;
+            b = ((b * b) % n + n) % n;
         }
-        return result;
+        return (result % n + n) % n;
     }
 
+    // not used
     public static int phi(int num) {
         ArrayList<Integer> raw_factors = primeFactors(num);
         ArrayList<Integer> unique_factors = new ArrayList<>();
@@ -317,7 +325,6 @@ public class LakeDestinationFinder {
     {
         assert num < 10000000;
         ArrayList<Integer> factors = new ArrayList<>();
-        factors.add(1);
         for (int a = 2;  num>1; ) {
             if (num%a==0) {
                 factors.add(a);
@@ -328,5 +335,9 @@ public class LakeDestinationFinder {
             }
         }
         return factors;
+    }
+
+    public static boolean isPrime(int n) {
+        return primeFactors(n).size() == 1;
     }
 }

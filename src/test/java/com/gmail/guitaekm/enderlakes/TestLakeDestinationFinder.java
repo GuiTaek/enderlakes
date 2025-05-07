@@ -226,17 +226,74 @@ public class TestLakeDestinationFinder {
         Random random = new Random(42);
         int counter = 0;
         for (int i = 0; i < 10000; i++) {
-            int b = random.nextInt(2, 100);
-            int e = random.nextInt(2, 50);
+            int b = random.nextInt(-20, 20);
+            int e = random.nextInt(2, 8);
             if (Math.pow(b, e) >= Integer.MAX_VALUE) {
                 continue;
             }
             counter++;
-            int n = random.nextInt(b + 1, 1000);
-            int expected = (int) Math.round(Math.pow(b, e) % n);
-            int actual = LakeDestinationFinder.modularExponentiationBySquaring(b, e, n);
+            int n = random.nextInt(Math.abs(b) + 1, 100);
+            int expected = (int) Math.round((Math.pow(b, e) % n + n) % n);
+            long actual = LakeDestinationFinder.modularExponentiationBySquaring(b, e, n);
             assertEquals(expected, actual);
         }
         assert counter >= 1000;
+    }
+
+    @Test void testIsPrimitiveRootIsFast() {
+        int counter = 0;
+        int n = CONFIG.nrLakes();
+        for (int i = 0; i < 100; i++) {
+            int g = new Random().nextInt(CONFIG.nrLakes());
+            if (LakeDestinationFinder.isPrimitiveRoot(g, n)) {
+                counter++;
+            }
+        }
+        assert counter >= 20;
+    }
+
+    @Test
+    public void testIsPrimitiveRoot() {
+        Random random = new Random(42);
+        {
+            int n = CONFIG.nrLakes();
+            for (int i = 0; i < 1; i++) {
+                int g = random.nextInt(2, n);
+                boolean expected = isPrimitiveRootSlow(g, n);
+                boolean actual = LakeDestinationFinder.isPrimitiveRoot(g, n);
+                assertEquals(expected, actual);
+            }
+        }
+        for (int i = 0; i < 10000; i++) {
+            int g = random.nextInt(2, 1000);
+            int n = random.nextInt(g + 1, 2000);
+            while (!LakeDestinationFinder.isPrime(n)) n++;
+            assertEquals(isPrimitiveRootSlow(g, n), LakeDestinationFinder.isPrimitiveRoot(g, n));
+        }
+    }
+
+    public static boolean isPrimitiveRootSlow(int g, int n) {
+        assert LakeDestinationFinder.isPrime(n);
+        Set<Integer> result = new HashSet<>();
+        for (int i = 0; i < n; i++) {
+            result.add((int) LakeDestinationFinder.modularExponentiationBySquaring(g, i, n));
+        }
+        return result.size() == n - 1;
+    }
+
+    @Test
+    public void testIsPrime() {
+        List<Integer> firstPrimesList =
+            List.of(
+                    2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37,
+                    41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97
+            );
+        int lastPrime = firstPrimesList.getLast();
+        Set<Integer> firstPrimes = new HashSet<>(firstPrimesList);
+        for (int i = 0; i <= lastPrime; i++) {
+            boolean expected = firstPrimes.contains(i);
+            boolean actual = LakeDestinationFinder.isPrime(i);
+            assertEquals(expected, actual);
+        }
     }
 }
