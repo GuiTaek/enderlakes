@@ -20,6 +20,7 @@ repositories {
 	mavenCentral()
 }
 loom {
+	accessWidenerPath = file("src/main/resources/suspicious_lakes.accesswidener")
 	splitEnvironmentSourceSets()
 
 	mods {

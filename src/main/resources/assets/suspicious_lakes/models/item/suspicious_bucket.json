@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "suspicious_lakes:item/suspicious_bucket"
+  }
+}
